@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Signup{% endblock %}
+{% block content %}
+  <div class="container-signup">
+    <el-row>
+      <el-col :span="24">
+        <h1>Signup new Employee</h1>
+      </el-col>
+    </el-row>
+    <el-row :gutter="10">
+      <label for="employee-name">Employee Name:</label>
+      <el-input v-model="employeeName" name="employee-name"></el-input>
+    </el-row>
+    <el-row>
+      <label for="employee-name">Employee Image:</label>
+      <el-upload
+        class="avatar-uploader"
+        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+        <el-icon v-else class="avatar-uploader-icon">
+          <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="">
+            <path fill="currentColor" d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"></path>
+          </svg>
+        </el-icon>
+      </el-upload>
+    </el-row>
+    <el-row justify="center">
+      <el-button type="primary" size="large">
+        Submit
+      </el-button>
+    </el-row>
+    <el-divider />
+    <el-row justify="center">
+      <el-link href="/checkin">
+        <el-button plain type="success" size="large">Or Check In Now</el-button>
+      </el-link>
+    </el-row>
+  </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  const App = {
+    data() {
+      return {
+        employeeName: '',
+        imageUrl: '',
+      }
+    },
+    methods: {
+      handleAvatarSuccess() {
+
+      },
+      beforeAvatarUpload() {
+
+      }
+    },
+    delimiters: ['[[', ']]']
+  };
+  const app = Vue.createApp(App);
+  app.use(ElementPlus);
+  app.mount("#app");
+</script>
+{% endblock %}
