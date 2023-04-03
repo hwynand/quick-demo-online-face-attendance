@@ -7,7 +7,7 @@
         <h1>Demo online Attendance</h1>
       </el-col>
     </el-row>
-    <el-row gutter="10">
+    <el-row :gutter="10">
       <el-col :span="12">
         <el-link href="/signup" :underline="false" justify="space-around">
           <el-button size="large">Signup</el-button>
@@ -19,13 +19,17 @@
         </el-link>
       </el-col>
     </el-row>
+    <el-row justify="center">
+      <el-image src="/static/Dlib_logo.png" title="Dlib C++" class="logo"></el-image>
+      <el-image src="/static/FastAPI_logo.png" title="FastAPI" class="logo"></el-image>
+      <el-image src="/static/Vue.js_logo.png" title="Vue.js" class="logo"></el-image>
+    </el-row>
   </div>
 {% endblock %}
 
 {% block script %}
 <script>
   const App = {
-    data() {},
     delimiters: ['[[', ']]']
   };
   const app = Vue.createApp(App);
