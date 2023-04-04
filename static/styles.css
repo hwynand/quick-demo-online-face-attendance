@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+h1 {
+  text-align: center;
+}
+
 .container {
   height: 100vh;
   display: flex;
@@ -12,6 +16,47 @@
   align-items: center;
 }
 
+.container-signup {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
 .el-row {
   margin: 20px 0;
+  min-width: 400px;
+}
+
+.logo {
+  height: 8rem;
+}
+
+
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  object-fit: contain;
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
 }

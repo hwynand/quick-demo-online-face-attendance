@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Signup{% endblock %}
+{% block content %}
+<div class="container-signup">
+  <el-row>
+    <el-col :span="24">
+      <h1>Signup new Employee</h1>
+    </el-col>
+  </el-row>
+  <el-row :gutter="10">
+    <label for="employee-name">Employee Name:</label>
+    <el-input v-model="employeeName" name="employee-name"></el-input>
+  </el-row>
+  <el-row v-if="errorName">
+    <el-text class="mx-1" type="danger">[[ errorName ]]</el-text>
+  </el-row>
+  <el-row>
+    <label for="employee-name">Employee Image:</label>
+    <el-upload class="avatar-uploader" action="/upload-image" :show-file-list="false" :on-success="handleAvatarSuccess"
+      :on-error="handleAvatarError">
+      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+      <el-icon v-else class="avatar-uploader-icon">
+        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="">
+          <path fill="currentColor"
+            d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z">
+          </path>
+        </svg>
+      </el-icon>
+    </el-upload>
+  </el-row>
+  <el-row v-if="errorImg">
+    <el-text class="mx-1" type="danger">[[ errorImg ]]</el-text>
+  </el-row>
+  <el-row justify="center">
+    <el-button type="primary" size="large" @click="handleSubmit" :disabled="disableSubmit" :loading="loading">
+      Submit
+    </el-button>
+  </el-row>
+  <el-divider />
+  <el-row justify="center">
+    <el-link href="/checkin">
+      <el-button plain type="success" size="large">Or Check In Now</el-button>
+    </el-link>
+  </el-row>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  const App = {
+    data() {
+      return {
+        employeeName: '',
+        imageUrl: '',
+        image_id: '',
+        encoding_id: '',
+        errorImg: '',
+        errorName: '',
+        loading: false,
+      }
+    },
+    computed: {
+      disableSubmit() {
+        return this.employeeName == '' || this.imageUrl == ''
+      }
+    },
+    methods: {
+      handleAvatarSuccess(response, uploadFile) {
+        this.imageUrl = response.image_url
+        this.encoding_id = response.encoding_id
+        this.image_id = response.image_id
+        this.errorImg = ''
+      },
+      handleAvatarError(error) {
+        this.errorImg = JSON.parse(error.message).detail
+        this.imageUrl = ''
+      },
+      async handleSubmit() {
+        this.loading = true
+        const data = {
+          fullname: this.employeeName,
+          image_id: this.image_id,
+          encoding_id: this.encoding_id,
+        }
+        const res = await fetch('/api/signup', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+        this.loading = false
+        if (res.status === 200) {
+          localStorage.setItem('success-msg', 'Signup successfully')
+          location.assign("/");
+        } else {
+          this.errorName = "Employee name existed"
+        }
+      }
+    },
+    delimiters: ['[[', ']]']
+  };
+  const app = Vue.createApp(App);
+  app.use(ElementPlus);
+  app.mount("#app");
+</script>
+{% endblock %}
