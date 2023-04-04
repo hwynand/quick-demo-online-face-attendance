@@ -1,35 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-  <div class="container">
-    <el-row>
-      <el-col :span="24">
-        <h1>Demo online Attendance</h1>
-      </el-col>
-    </el-row>
-    <el-row :gutter="10">
-      <el-col :span="12">
-        <el-link href="/signup" :underline="false" justify="space-around">
-          <el-button size="large">Signup</el-button>
-        </el-link>
-      </el-col>
-      <el-col :span="12">
-        <el-link href="/checkin" :underline="false">
-          <el-button size="large">Checkin</el-button>
-        </el-link>
-      </el-col>
-    </el-row>
-    <el-row justify="center">
-      <el-image src="/static/Dlib_logo.png" title="Dlib C++" class="logo"></el-image>
-      <el-image src="/static/FastAPI_logo.png" title="FastAPI" class="logo"></el-image>
-      <el-image src="/static/Vue.js_logo.png" title="Vue.js" class="logo"></el-image>
-    </el-row>
-  </div>
+<div class="container">
+  <el-row>
+    <el-alert v-if="successMsg" type="success" effect="dark" style="width: 100%">
+      <template #title>
+        <div style="font-size: 30px">[[ successMsg ]]</div>
+      </template>
+    </el-alert>
+  </el-row>
+  <el-row>
+    <el-col :span="24">
+      <h1 style="font-size: 50px">Demo online Attendance</h1>
+    </el-col>
+  </el-row>
+  <el-row :gutter="10">
+    <el-col :span="12" style="display: flex; justify-content: center;">
+      <el-link href="/signup" :underline="false" justify="space-around">
+        <el-button size="large">Signup</el-button>
+      </el-link>
+    </el-col>
+    <el-col :span="12" style="display: flex; justify-content: center;">
+      <el-link href="/checkin" :underline="false">
+        <el-button size="large">Checkin</el-button>
+      </el-link>
+    </el-col>
+  </el-row>
+  <el-row justify="center">
+    <el-image src="/static/Dlib_logo.png" title="Dlib C++" class="logo"></el-image>
+    <el-image src="/static/FastAPI_logo.png" title="FastAPI" class="logo"></el-image>
+    <el-image src="/static/Vue.js_logo.png" title="Vue.js" class="logo"></el-image>
+  </el-row>
+</div>
 {% endblock %}
 
 {% block script %}
 <script>
   const App = {
+    data() {
+      return {
+        successMsg: localStorage.getItem('success-msg'),
+      }
+    },
+    mounted() {
+      setTimeout(() => {
+        localStorage.removeItem('success-msg')
+        this.successMsg = ''
+      }, 3000)
+    },
     delimiters: ['[[', ']]']
   };
   const app = Vue.createApp(App);
