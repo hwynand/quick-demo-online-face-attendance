@@ -11,6 +11,9 @@
     <label for="employee-name">Employee Name:</label>
     <el-input v-model="employeeName" name="employee-name"></el-input>
   </el-row>
+  <el-row v-if="errorName">
+    <el-text class="mx-1" type="danger">[[ errorName ]]</el-text>
+  </el-row>
   <el-row>
     <label for="employee-name">Employee Image:</label>
     <el-upload class="avatar-uploader" action="/upload-image" :show-file-list="false" :on-success="handleAvatarSuccess"
@@ -25,7 +28,7 @@
       </el-icon>
     </el-upload>
   </el-row>
-  <el-row>
+  <el-row v-if="errorImg">
     <el-text class="mx-1" type="danger">[[ errorImg ]]</el-text>
   </el-row>
   <el-row justify="center">
@@ -52,6 +55,7 @@
         image_id: '',
         encoding_id: '',
         errorImg: '',
+        errorName: '',
         loading: false,
       }
     },
@@ -86,8 +90,12 @@
           body: JSON.stringify(data),
         })
         this.loading = false
-        localStorage.setItem('success-msg', 'Signup successfully')
-        location.assign("/");
+        if (res.status === 200) {
+          localStorage.setItem('success-msg', 'Signup successfully')
+          location.assign("/");
+        } else {
+          this.errorName = "Employee name existed"
+        }
       }
     },
     delimiters: ['[[', ']]']

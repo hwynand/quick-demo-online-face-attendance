@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from numpy import ndarray
 from PIL import Image
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 import schemas
@@ -102,6 +102,13 @@ async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
 
 @app.post("/api/signup")
 async def signup(*, db: Session = Depends(get_db), employee_in: schemas.Employee):
+    employee_exist = db.scalar(
+        select(Employee).filter_by(fullname=employee_in.fullname)
+    )
+    if employee_exist:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Employee name existed"
+        )
     employee_obj = Employee(
         fullname=employee_in.fullname,
         encoding_id=employee_in.encoding_id,
@@ -110,9 +117,6 @@ async def signup(*, db: Session = Depends(get_db), employee_in: schemas.Employee
     db.add(employee_obj)
     db.commit()
     db.refresh(employee_obj)
-    import time
-
-    time.sleep(3)
     return employee_obj
 
 
