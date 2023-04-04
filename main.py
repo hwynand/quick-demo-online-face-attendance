@@ -1,8 +1,9 @@
 import os
 import secrets
 
+import numpy as np
 import uvicorn
-from face_recognition import face_encodings, load_image_file
+from face_recognition import compare_faces, face_encodings, load_image_file
 from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -101,7 +102,7 @@ async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
 
 
 @app.post("/api/signup")
-async def signup(*, db: Session = Depends(get_db), employee_in: schemas.Employee):
+async def signup_api(*, db: Session = Depends(get_db), employee_in: schemas.Employee):
     employee_exist = db.scalar(
         select(Employee).filter_by(fullname=employee_in.fullname)
     )
@@ -120,6 +121,32 @@ async def signup(*, db: Session = Depends(get_db), employee_in: schemas.Employee
     return employee_obj
 
 
+@app.get("/checkin", response_class=HTMLResponse)
+async def checkin(request: Request):
+    return templates.TemplateResponse("checkin.html", {"request": request})
+
+
+@app.post("/api/checkin")
+async def checkin_api(*, db: Session = Depends(get_db), file: UploadFile):
+    known_encoding_bytes = db.scalars(select(Encoding.encoding)).all()
+    known_encoding_ids = db.scalars(select(Encoding.id)).all()
+    known_encoding = []
+    for b in known_encoding_bytes:
+        known_encoding.append(np.frombuffer(b))
+    unknown_image = load_image_file(file.file)
+    unknown_image_encoding = face_encodings(unknown_image)[0]
+    results = compare_faces(known_encoding, unknown_image_encoding)
+    for index, result in enumerate(results):
+        if result:
+            found_encoding_id = known_encoding_ids[index]
+            encoding = db.scalar(select(Encoding).filter_by(id=found_encoding_id))
+            employee = encoding.employee
+            if not employee:
+                continue
+            return employee.fullname
+    return False
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", reload=True)

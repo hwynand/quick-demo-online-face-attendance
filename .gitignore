@@ -2,3 +2,6 @@
 __pycache__/
 .python-version
 app.db
+*.ipynb
+*.jpg
+*.png

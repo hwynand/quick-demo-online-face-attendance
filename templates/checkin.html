@@ -1,5 +1,85 @@
 {% extends "base.html" %}
 {% block title %}Checkin{% endblock %}
 {% block content %}
-  <h1>Check-in page</h1>
+<div class="container-checkin">
+  <el-row>
+    <el-col :span="24">
+      <h1>Check In</h1>
+    </el-col>
+  </el-row>
+  <el-row>
+    <video ref="liveVideo" width="640" height="480" autoplay></video>
+    <canvas ref="photoCanvas" width="640" height="480"></canvas>
+  </el-row>
+  <el-row justify="center" :gutter="10">
+    <el-button @click="checkIn" size="large">Check In Now</el-button>
+    <el-divider />
+    <el-link href="/signup">
+      <el-button plain type="success" size="large">Or Signup Now</el-button>
+    </el-link>
+  </el-row>
+  <el-row>
+    <el-alert v-if="employeeName" type="success" effect="dark" style="width: 100%">
+      <template #title>
+        <div style="font-size: 30px">Hello [[ employeeName ]]</div>
+      </template>
+    </el-alert>
+  </el-row>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  const App = {
+    data() {
+      return {
+        employeeName: '',
+      }
+    },
+    methods: {
+      convertCanvasToImage(canvas) {
+        const image = new Image();
+        image.src = canvas.toDataURL("image/png");
+        return image;
+      },
+
+      takePhoto() {
+        const { liveVideo, photoCanvas } = this.$refs
+        const context = photoCanvas.getContext('2d')
+        context.drawImage(liveVideo, 0, 0, 640, 480);
+        const imageEl = this.convertCanvasToImage(photoCanvas)
+        return imageEl
+      },
+
+      async checkIn() {
+        const imageEl = this.takePhoto()
+        const imageCheckin = await (await fetch(imageEl.src)).blob()
+        const formData = new FormData();
+        formData.append("file", imageCheckin);
+        fetch('/api/checkin', {
+          method: "POST",
+          body: formData
+        })
+          .then(res => res.json())
+          .then(data => this.employeeName = data)
+      }
+    },
+    mounted() {
+      const { liveVideo, photoCanvas } = this.$refs
+      const context = photoCanvas.getContext('2d')
+      // Get access to the camera!
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Not adding `{ audio: true }` since we only want video now
+        navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+          liveVideo.srcObject = stream;
+          liveVideo.play();
+        });
+      }
+    },
+    delimiters: ['[[', ']]']
+  };
+  const app = Vue.createApp(App);
+  app.use(ElementPlus);
+  app.mount("#app");
+</script>
 {% endblock %}

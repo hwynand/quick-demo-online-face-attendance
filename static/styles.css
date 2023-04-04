@@ -60,3 +60,11 @@ h1 {
   height: 178px;
   text-align: center;
 }
+
+.container-checkin {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
